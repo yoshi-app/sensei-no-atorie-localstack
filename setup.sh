@@ -24,3 +24,23 @@ aws --profile localstack --endpoint-url=http://localhost:4566 ec2 create-route -
 
 #パブリックサブネットにルートテーブルを関連付け
 aws --profile localstack --endpoint-url=http://localhost:4566 ec2 associate-route-table --route-table-id rtb-17c3d6a9a44b2b927 --subnet-id subnet-f1446cf9d06f191c4
+
+#パブリックサブネットのパブリックIP自動割り当て
+aws --profile localstack --endpoint-url=http://localhost:4566 ec2 modify-subnet-attribute --subnet-id subnet-f1446cf9d06f191c4 --map-public-ip-on-launch
+
+#EC2用セキュリティグループ作成
+aws --profile localstack --endpoint-url=http://localhost:4566 ec2 create-security-group --group-name sensei-ec2-sg --description "Security group for EC2" --vpc-id vpc-59c000a31a31857fb
+
+#EC2用SGインバウンドルール追加（SSH）
+aws --profile localstack --endpoint-url=http://localhost:4566 ec2 authorize-security-group-ingress --group-id sg-73bead107f4a48753 --protocol tcp --port 22 --cidr 0.0.0.0/0
+
+#EC2用SGインバウンドルール追加（HTTP）
+aws --profile localstack --endpoint-url=http://localhost:4566 ec2 authorize-security-group-ingress --group-id sg-73bead107f4a48753 --protocol tcp --port 80 --cidr 0.0.0.0/0
+
+#RDS用セキュリティグループ作成
+aws --profile localstack --endpoint-url=http://localhost:4566 ec2 create-security-group --group-name sensei-rds-sg --description "Security group for RDS" --vpc-id vpc-59c000a31a31857fb
+
+#RDS用SGインバウンドルール追加（PostgreSQL：EC2SGからのみ許可）
+aws --profile localstack --endpoint-url=http://localhost:4566 ec2 authorize-security-group-ingress --group-id sg-151e62b5bcdc06206 --protocol tcp --port 5432 --source-group sg-73bead107f4a48753
+
+

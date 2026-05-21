@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 #エイリアス設定（~/.bashrcに追記済み・初回のみ実行）
 # echo "alias awslocal='aws --profile localstack --endpoint-url=http://localhost:4566'" >> ~/.bashrc && source ~/.bashrc
 # 以降のコマンドはエイリアスなしのフルコマンドで記録
@@ -43,4 +44,11 @@ aws --profile localstack --endpoint-url=http://localhost:4566 ec2 create-securit
 #RDS用SGインバウンドルール追加（PostgreSQL：EC2SGからのみ許可）
 aws --profile localstack --endpoint-url=http://localhost:4566 ec2 authorize-security-group-ingress --group-id sg-151e62b5bcdc06206 --protocol tcp --port 5432 --source-group sg-73bead107f4a48753
 
+#KeyPair作成
+aws --profile localstack --endpoint-url=http://localhost:4566 ec2 create-key-pair --key-name sensei-no-atorie-key --query "KeyMaterial" --output text > ~/sensei-no-atorie-key.pem
 
+#KeyPairのパーミッション設定
+chmod 400 ~/sensei-no-atorie-key.pem
+
+#EC2インスタンス起動
+aws --profile localstack --endpoint-url=http://localhost:4566 ec2 run-instances --image-id ami-04681a1dbd79675a5 --instance-type t2.micro --key-name sensei-no-atorie-key --subnet-id subnet-f1446cf9d06f191c4 --security-group-ids sg-73bead107f4a48753 --count 1

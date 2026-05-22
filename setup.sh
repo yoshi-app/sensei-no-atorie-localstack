@@ -12,6 +12,7 @@ echo "VPC作成完了: $VPC_ID"
 SUBNET_PUBLIC_ID=$($AWS ec2 create-subnet \
   --vpc-id "$VPC_ID" \
   --cidr-block 10.0.1.0/24 \
+  --availability-zone ap-northeast-1a \
   --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=sensei-public-subnet}]' \
   --query 'Subnet.SubnetId' --output text)
 echo "パブリックサブネット作成完了: $SUBNET_PUBLIC_ID"
@@ -19,6 +20,7 @@ echo "パブリックサブネット作成完了: $SUBNET_PUBLIC_ID"
 SUBNET_PRIVATE_ID=$($AWS ec2 create-subnet \
   --vpc-id "$VPC_ID" \
   --cidr-block 10.0.2.0/24 \
+  --availability-zone ap-northeast-1c \
   --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=sensei-private-subnet}]' \
   --query 'Subnet.SubnetId' --output text)
 echo "プライベートサブネット作成完了: $SUBNET_PRIVATE_ID"

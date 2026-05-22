@@ -68,6 +68,7 @@ echo "RDS用SG作成完了: $RDS_SG_ID"
 $AWS ec2 authorize-security-group-ingress --group-id "$RDS_SG_ID" --protocol tcp --port 5432 --source-group "$EC2_SG_ID"
 echo "RDS用SGインバウンドルール追加完了（PostgreSQL）"
 
+rm -f ~/sensei-no-atorie-key.pem
 $AWS ec2 create-key-pair --key-name sensei-no-atorie-key --query "KeyMaterial" --output text > ~/sensei-no-atorie-key.pem
 chmod 400 ~/sensei-no-atorie-key.pem
 echo "KeyPair作成完了"

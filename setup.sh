@@ -83,6 +83,13 @@ INSTANCE_ID=$($AWS ec2 run-instances \
   --query 'Instances[0].InstanceId' --output text)
 echo "EC2インスタンス起動完了: $INSTANCE_ID"
 
+$AWS rds create-db-subnet-group --db-subnet-group-name sensei-db-subnet-group --db-subnet-group-description "Subnet group for RDS" --subnet-ids "$SUBNET_PUBLIC_ID" "$SUBNET_PRIVATE_ID" 
+echo "DBサブネットグループ作成完了"
+
+RDS_ENDPOINT=$($AWS rds create-db-instance --db-instance-identifier sensei-db --db-instance-class db.t3.micro --engine postgres --master-username admin --master-user-password password --allocated-storage 20 --vpc-security-group-ids "$RDS_SG_ID" --db-subnet-group-name sensei-db-subnet-group --query 'DBInstance.Endpoint.Address' --output text)
+echo "RDS作成完了:$RDS_ENDPOINT"          
+
+
 echo ""
 echo "VPC_ID:            $VPC_ID"
 echo "SUBNET_PUBLIC_ID:  $SUBNET_PUBLIC_ID"
@@ -92,3 +99,5 @@ echo "RTB_ID:            $RTB_ID"
 echo "EC2_SG_ID:         $EC2_SG_ID"
 echo "RDS_SG_ID:         $RDS_SG_ID"
 echo "INSTANCE_ID:       $INSTANCE_ID"
+echo "RDS_ENDPOINT:      $RDS_ENDPOINT"
+
